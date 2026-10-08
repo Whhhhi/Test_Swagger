@@ -1,0 +1,73 @@
+# ============================================================
+# 更新 Pet 测试用例集 — PUT /pet
+# ============================================================
+
+- title: "正向 — 更新 Pet 名称和状态"
+  method: PUT
+  path: /pet
+  payload:
+    id: "{pet_id}"
+    name: "Buddy-Updated"
+    photoUrls:
+      - "https://example.com/photo1.jpg"
+    status: "sold"
+  expected_status: 200
+  expected_body_fields:
+    id: "{pet_id}"
+    name: "Buddy-Updated"
+    status: "sold"
+  marks: ["positive", "smoke"]
+
+- title: "正向 — 仅更新 status 字段"
+  method: PUT
+  path: /pet
+  payload:
+    id: "{pet_id}"
+    name: "Buddy"
+    photoUrls: []
+    status: "pending"
+  expected_status: 200
+  expected_body_fields:
+    id: "{pet_id}"
+    status: "pending"
+  marks: ["positive"]
+
+- title: "反向 — 更新不存在的 Pet"
+  method: PUT
+  path: /pet
+  payload:
+    id: "{nonexistent_id}"
+    name: "Ghost"
+    photoUrls: []
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 更新时缺失 name 字段"
+  method: PUT
+  path: /pet
+  payload:
+    id: "{pet_id}"
+    photoUrls: []
+  expected_status: 500
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 更新时 payload 为空"
+  method: PUT
+  path: /pet
+  payload: {}
+  expected_status: 405
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — ID 类型不匹配（字符串 ID 更新数字 ID）"
+  method: PUT
+  path: /pet
+  payload:
+    id: "not-a-number"
+    name: "Invalid"
+    photoUrls: []
+  expected_status: 500
+  expected_body_fields: {}
+  marks: ["negative"]

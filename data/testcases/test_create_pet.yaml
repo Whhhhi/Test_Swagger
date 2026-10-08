@@ -1,0 +1,90 @@
+# ============================================================
+# 创建 Pet 测试用例集 — POST /pet
+# ============================================================
+# 字段说明:
+#   title                — 用例标题（显示在 Allure 报告中）
+#   method               — HTTP 方法
+#   path                 — 请求路径
+#   payload              — 请求体（支持模板变量 {new_pet_id}）
+#   headers              — 额外请求头（可选）
+#   expected_status      — 期望 HTTP 状态码
+#   expected_body_fields — 期望响应体字段值校验
+#   marks                — pytest marks（可选）
+# ============================================================
+
+- title: "正向 — 携带完整字段创建 Pet"
+  method: POST
+  path: /pet
+  payload:
+    id: "{new_pet_id}"
+    category:
+      id: 1
+      name: "dogs"
+    name: "Buddy"
+    photoUrls:
+      - "https://example.com/photo1.jpg"
+    tags:
+      - id: 1
+        name: "vaccinated"
+    status: "available"
+  expected_status: 200
+  expected_body_fields:
+    name: "Buddy"
+    status: "available"
+    category.name: "dogs"
+  marks: ["positive", "smoke"]
+
+- title: "正向 — 仅必填字段创建 Pet"
+  method: POST
+  path: /pet
+  payload:
+    id: "{new_pet_id}"
+    name: "Milo"
+    photoUrls: []
+  expected_status: 200
+  expected_body_fields:
+    name: "Milo"
+    photoUrls: []
+  marks: ["positive"]
+
+- title: "反向 — 缺失必填字段 name"
+  method: POST
+  path: /pet
+  payload:
+    id: "{new_pet_id}"
+    photoUrls:
+      - "https://example.com/photo.jpg"
+  expected_status: 500
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 空请求体"
+  method: POST
+  path: /pet
+  payload: {}
+  expected_status: 405
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 重复创建相同 ID 的 Pet"
+  method: POST
+  path: /pet
+  payload:
+    id: "{new_pet_id}"
+    name: "Duplicate"
+    photoUrls: []
+  expected_status: 405
+  expected_body_fields: {}
+  marks: ["negative"]
+  run_mode: "duplicate"
+
+- title: "反向 — 字段类型错误（name 传数字）"
+  method: POST
+  path: /pet
+  payload:
+    id: "{new_pet_id}"
+    name: 12345
+    photoUrls: []
+  expected_status: 500
+  expected_body_fields: {}
+  marks: ["negative"]

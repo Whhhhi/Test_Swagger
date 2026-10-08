@@ -1,0 +1,44 @@
+# ============================================================
+# 查询 Pet 测试用例集 — GET /pet/{petId}
+# ============================================================
+
+- title: "正向 — 通过有效 ID 查询 Pet"
+  method: GET
+  path: "/pet/{pet_id}"
+  payload: ~
+  expected_status: 200
+  expected_body_fields:
+    id: "{pet_id}"
+  marks: ["positive", "smoke"]
+
+- title: "反向 — 查询不存在的 ID"
+  method: GET
+  path: "/pet/{nonexistent_id}"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 非法的 ID 格式（负数）"
+  method: GET
+  path: "/pet/-1"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 非法的 ID 格式（字符串）"
+  method: GET
+  path: "/pet/abc-def-ghi"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 非法的 ID 格式（特殊字符）"
+  method: GET
+  path: "/pet/@#$%"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]

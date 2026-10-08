@@ -1,0 +1,44 @@
+# ============================================================
+# 删除 Pet 测试用例集 — DELETE /pet/{petId}
+# ============================================================
+
+- title: "正向 — 删除已存在的 Pet"
+  method: DELETE
+  path: "/pet/{pet_id}"
+  payload: ~
+  expected_status: 200
+  expected_body_fields: {}
+  marks: ["positive", "smoke"]
+
+- title: "反向 — 删除不存在的 Pet"
+  method: DELETE
+  path: "/pet/{nonexistent_id}"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 非法的 ID 格式删除（字符串）"
+  method: DELETE
+  path: "/pet/delete-me-now"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 非法的 ID 格式删除（负数）"
+  method: DELETE
+  path: "/pet/-999"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+
+- title: "反向 — 重复删除（删除两次）"
+  method: DELETE
+  path: "/pet/{pet_id}"
+  payload: ~
+  expected_status: 404
+  expected_body_fields: {}
+  marks: ["negative"]
+  run_mode: "delete_twice"  # 第二次删除时用，期望 404
